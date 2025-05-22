@@ -1,0 +1,27 @@
+{
+    "messages_sent": [
+      "Hello everyone, how’s everything going? I hope all is well.",
+      "I’m good, thank you. How about you?",
+      "Is there anything I can help you with? I’m here if you need assistance.",
+      "Of course, I can explain further.",
+      "Do you have any other questions related to this issue?",
+      "Thanks for your time, I really appreciate it.",
+      "Can we continue this conversation at a later time?",
+      "I’m sorry, I’m busy right now. I’ll get back to you later.",
+      "What else can I do to assist you?",
+      "I hope you have a great day!"
+    ],
+    "messages_received": [
+      "I’m doing well, thanks for checking in.",
+      "I’m looking for information about the latest product.",
+      "Could you explain more about this feature?",
+      "What’s the main difference between the old and new version?",
+      "I appreciate your help, this is very useful.",
+      "Thank you, it’s clearer now.",
+      "I’ll think about it and get back to you.",
+      "Could you let me know when the new feature will be released?",
+      "This has been very informative, I’ve learned a lot.",
+      "Thank you for the explanation, it’s been very helpful!"
+    ]
+  }
+  

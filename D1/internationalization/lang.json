@@ -1,0 +1,32 @@
+{
+    "en": {
+        "home": "Home",
+        "about_us": "About Us",
+        "contact": "Contact",
+        "register": "Register",
+        "login": "Login",
+        "copyright": "Copyright",
+        "paragraph_1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla condimentum, nunc at scelerisque aliquam, elit velit scelerisque metus, eu tristique orci ipsum sed nisi. Aenean ac libero euismod, facilisis lorem vel, gravida augue. Curabitur vel varius sapien.",
+        "paragraph_2": "Aenean sollicitudin magna vel feugiat euismod. Proin gravida felis vel dolor convallis, eu efficitur purus finibus. Aliquam erat volutpat."
+    },
+    "id": {
+        "home": "Beranda",
+        "about_us": "Tentang Kami",
+        "contact": "Kontak",
+        "register": "Daftar",
+        "login": "Masuk",
+        "copyright": "Hak Cipta",
+        "paragraph_1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla condimentum, nunc at scelerisque aliquam, elit velit scelerisque metus, eu tristique orci ipsum sed nisi. Aenean ac libero euismod, facilisis lorem vel, gravida augue. Curabitur vel varius sapien.",
+        "paragraph_2": "Aenean sollicitudin magna vel feugiat euismod. Proin gravida felis vel dolor convallis, eu efficitur purus finibus. Aliquam erat volutpat."
+    },
+    "nl": {
+        "home": "Startpagina",
+        "about_us": "Over ons",
+        "contact": "Contact",
+        "register": "Registreren",
+        "login": "Inloggen",
+        "copyright": "Auteursrecht",
+        "paragraph_1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla condimentum, nunc at scelerisque aliquam, elit velit scelerisque metus, eu tristique orci ipsum sed nisi. Aenean ac libero euismod, facilisis lorem vel, gravida augue. Curabitur vel varius sapien.",
+        "paragraph_2": "Aenean sollicitudin magna vel feugiat euismod. Proin gravida felis vel dolor convallis, eu efficitur purus finibus. Aliquam erat volutpat."
+    }
+}

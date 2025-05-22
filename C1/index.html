@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animasi</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    canvas {
+      background: #fff;
+      border: 2px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    function drawRoundedSquare(ctx, x, y, size, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + size - radius, y);
+      ctx.quadraticCurveTo(x + size, y, x + size, y + radius);
+      ctx.lineTo(x + size, y + size - radius);
+      ctx.quadraticCurveTo(x + size, y + size, x + size - radius, y + size);
+      ctx.lineTo(x + radius, y + size);
+      ctx.quadraticCurveTo(x, y + size, x, y + size - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    const squareSize = 20;
+    const cornerRadius = 0;
+
+    const redSquare = { 
+      x: 0, 
+      y: 0, 
+      dx: 4, 
+      dy: 4, 
+      color: "red" 
+    };
+
+    const greenSquare = { 
+      x: canvas.width / 2 - squareSize / 2, 
+      y: 0, 
+      dy: 4, 
+      color: "green" 
+    };
+
+    const blueSquare = { 
+      x: 0, 
+      y: canvas.height / 2 - squareSize / 2, 
+      dx: 4, 
+      color: "blue" 
+    };
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      redSquare.x += redSquare.dx;
+      redSquare.y += redSquare.dy;
+      if (redSquare.x <= 0 || redSquare.x + squareSize >= canvas.width) {
+        redSquare.dx *= -1;
+      }
+      if (redSquare.y <= 0 || redSquare.y + squareSize >= canvas.height) {
+        redSquare.dy *= -1;
+      }
+      ctx.fillStyle = redSquare.color;
+      drawRoundedSquare(ctx, redSquare.x, redSquare.y, squareSize, cornerRadius);
+
+      greenSquare.y += greenSquare.dy;
+      if (greenSquare.y <= 0 || greenSquare.y + squareSize >= canvas.height) {
+        greenSquare.dy *= -1;
+      }
+      ctx.fillStyle = greenSquare.color;
+      drawRoundedSquare(ctx, greenSquare.x, greenSquare.y, squareSize, cornerRadius);
+
+      blueSquare.x += blueSquare.dx;
+      if (blueSquare.x <= 0 || blueSquare.x + squareSize >= canvas.width) {
+        blueSquare.dx *= -1;
+      }
+      ctx.fillStyle = blueSquare.color;
+      drawRoundedSquare(ctx, blueSquare.x, blueSquare.y, squareSize, cornerRadius);
+
+      requestAnimationFrame(update);
+    }
+
+    update();
+  </script>
+</body>
+</html>

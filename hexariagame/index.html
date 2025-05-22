@@ -1,0 +1,461 @@
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Hexaria - Permainan Strategi Hexagonal Modern</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        margin: 0;
+        background: linear-gradient(135deg, #212121, #2c3e50);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #ecf0f1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        max-height: 600px;
+        overflow: hidden;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    h1 {
+        margin: 16px 0 4px;
+        font-weight: 700;
+        font-size: clamp(1.4rem, 4vw, 1.8rem);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 0 6px #3498db;
+    }
+    h2 {
+        margin: 0 0 10px;
+        font-weight: 400;
+        font-size: clamp(0.8rem, 2.5vw, 1rem);
+        font-style: italic;
+        color: #7f8c8d;
+    }
+
+    /* Mode selector container */
+    #mode-selector-container {
+        margin-bottom: 10px;
+        width: 100%;
+        max-width: 350px;
+        display: flex;
+        justify-content: center;
+    }
+    #mode-selector {
+        background: #2c3e50;
+        border: 1px solid #2980b9;
+        color: #ecf0f1;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    #mode-selector:focus {
+        outline: 2px solid #1abc9c;
+        outline-offset: 2px;
+    }
+
+    #game-container {
+        flex: 1 1 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 100vw;
+        padding: 0 8px 8px;
+        box-sizing: border-box;
+    }
+
+    #hex-grid {
+        --hex-size: clamp(18px, 5vw, 26px);
+        --hex-gap: 3px;
+        display: grid;
+        grid-template-columns: repeat(7, calc(var(--hex-size) * 1.732));
+        grid-gap: var(--hex-gap);
+        justify-content: center;
+        width: 100%;
+    }
+
+    #hex-grid > div.row-even > .hex-tile {
+        margin-left: calc(var(--hex-size) * 0.866); 
+    }
+
+    .hex-tile {
+        width: calc(var(--hex-size) * 1.732);
+        height: calc(var(--hex-size) * 2);
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: filter 0.3s ease;
+    }
+
+    .hex-tile > .hex-shape {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(145deg, #34495e, #2c3e50);
+        clip-path: polygon(
+        25% 0%, 75% 0%, 
+        100% 50%, 75% 100%, 
+        25% 100%, 0% 50%
+        );
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #2980b9;
+        box-shadow:
+        inset 0 0 10px #2980b9,
+        0 0 10px #1abc9c;
+        color: #7f8c8d;
+        font-weight: 700;
+        user-select: none;
+        transition: background-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
+    }
+
+    .hex-tile.owner-player1 > .hex-shape {
+        background: linear-gradient(135deg, #1abc9c, #16a085);
+        border-color: #16a085;
+        box-shadow:
+        inset 0 0 15px #16a085,
+        0 0 15px #1abc9c;
+        color: #ecf0f1;
+    }
+
+    .hex-tile.owner-player2 > .hex-shape {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border-color: #c0392b;
+        box-shadow:
+        inset 0 0 15px #c0392b,
+        0 0 15px #e74c3c;
+        color: #ecf0f1;
+    }
+
+    .hex-tile.available > .hex-shape {
+        filter: drop-shadow(0 0 6px #f39c12);
+    }
+
+    .hex-tile:hover > .hex-shape {
+        filter: brightness(1.2);
+    }
+
+    .hex-tile.disabled > .hex-shape {
+        cursor: default;
+        filter: grayscale(70%);
+        opacity: 0.7;
+    }
+
+    #info-panel {
+        width: 100%;
+        max-width: 100vw;
+        background: rgba(44, 62, 80, 0.8);
+        margin-top: 8px;
+        border-radius: 8px;
+        padding: 8px 16px;
+        box-shadow: 0 0 12px #2980b9;
+        font-size: clamp(0.75rem, 2vw, 0.9rem);
+        text-align: center;
+        user-select: none;
+        min-height: 1.5em;
+    }
+    #info-panel span {
+        font-weight: 700;
+        color: #1abc9c;
+    }
+    </style>
+    </head>
+    <body>
+    <h1>Hexaria</h1>
+    <h2>Penaklukan Wilayah Hexagonal</h2>
+    <div id="mode-selector-container">
+        <label for="mode-selector" style="margin-right: 10px;">Pilih Mode Permainan:</label>
+        <select id="mode-selector" aria-label="Pilih Mode Permainan">
+        <option value="ai" selected>Melawan AI</option>
+        <option value="multiplayer">Multiplayer Lokal</option>
+        </select>
+    </div>
+    <div id="game-container">
+        <div id="hex-grid" aria-label="Papan permainan hexagonal" role="grid"></div>
+    </div>
+    <div id="info-panel" aria-live="polite" aria-atomic="true">
+        Giliran Pemain 1 - Klik ubin yang disorot untuk menaklukkan wilayah
+    </div>
+
+    <script>
+    (() => {
+        const grid = document.getElementById('hex-grid');
+        const infoPanel = document.getElementById('info-panel');
+        const modeSelector = document.getElementById('mode-selector');
+
+        const rows = 7;
+        const cols = 7;
+        let board = [];
+
+        let player1Score = 0;
+        let player2Score = 0;
+
+        let gameMode = modeSelector.value;
+        let currentTurn = 'player1';
+
+        let lockAlertShown = {
+        player1: false,
+        player2: false,
+        ai: false
+        };
+
+        function initBoard() {
+        board = [];
+        for(let r = 0; r < rows; r++) {
+            for(let c = 0; c < cols; c++) {
+            board.push({row: r, col: c, owner: 'netral'});
+            }
+        }
+        lockAlertShown.player1 = false;
+        lockAlertShown.player2 = false;
+        lockAlertShown.ai = false;
+        }
+
+        function getNeighbors(tile) {
+        const deltasEven = [[-1,0],[-1,-1],[0,-1],[0,1],[1,0],[1,-1]];
+        const deltasOdd = [[-1,1],[-1,0],[0,-1],[0,1],[1,1],[1,0]];
+        const deltas = tile.row % 2 === 0 ? deltasEven : deltasOdd;
+        const neighbors = [];
+        for(const [dr,dc] of deltas) {
+            const nr = tile.row + dr;
+            const nc = tile.col + dc;
+            if(nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+            const nTile = board.find(t => t.row === nr && t.col === nc);
+            if(nTile) neighbors.push(nTile);
+            }
+        }
+        return neighbors;
+        }
+
+        function getAvailableMoves(player) {
+        const owned = board.filter(t => t.owner === player);
+        if(owned.length === 0) {
+            return board.filter(t => t.owner === 'netral');
+        }
+        const moves = new Set();
+        owned.forEach(tile => {
+            getNeighbors(tile).forEach(nb => {
+            if(nb.owner === 'netral') moves.add(nb);
+            });
+        });
+        return Array.from(moves);
+        }
+
+        function renderBoard() {
+        grid.innerHTML = '';
+
+        player1Score = board.filter(t => t.owner === 'player1').length;
+        player2Score = board.filter(t => t.owner === 'player2').length;
+
+        for(let r=0; r < rows; r++) {
+            const isEvenRow = (r % 2 === 1);
+            const rowDiv = document.createElement('div');
+            if(isEvenRow) rowDiv.classList.add('row-even');
+            rowDiv.style.display = 'contents';
+
+            for(let c=0; c < cols; c++) {
+            const tile = board.find(t => t.row === r && t.col === c);
+            if(!tile) continue;
+
+            const tileDiv = document.createElement('div');
+            tileDiv.classList.add('hex-tile');
+            tileDiv.setAttribute('role', 'gridcell');
+            tileDiv.setAttribute('tabindex', '-1');
+            tileDiv.setAttribute('aria-label', `Ubin baris ${r+1} kolom ${c+1}, dimiliki oleh ${tile.owner}`);
+            if(isEvenRow) tileDiv.classList.add('row-even');
+
+            if(tile.owner === 'player1') tileDiv.classList.add('owner-player1');
+            else if(tile.owner === 'player2') tileDiv.classList.add('owner-player2');
+            else tileDiv.classList.add('disabled');
+
+            const availableMoves = getAvailableMoves(currentTurn);
+            const isAvailable = availableMoves.some(m => m.row === tile.row && m.col === tile.col);
+
+            if(isAvailable && tile.owner === 'netral') {
+                tileDiv.classList.add('available');
+                if(currentTurn === 'player1' || currentTurn === 'player2') {
+                tileDiv.style.cursor = 'pointer';
+                tileDiv.setAttribute('tabindex', '0');
+                tileDiv.onclick = () => playerMove(tile);
+                tileDiv.onkeydown = (e) => {
+                    if(e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    playerMove(tile);
+                    }
+                };
+                } else {
+                tileDiv.style.cursor = 'default';
+                tileDiv.onclick = null;
+                tileDiv.onkeydown = null;
+                }
+            } else {
+                tileDiv.classList.remove('available');
+                tileDiv.style.cursor = 'default';
+                tileDiv.onclick = null;
+                tileDiv.onkeydown = null;
+            }
+
+            const hexShape = document.createElement('div');
+            hexShape.classList.add('hex-shape');
+            tileDiv.appendChild(hexShape);
+
+            rowDiv.appendChild(tileDiv);
+            }
+            grid.appendChild(rowDiv);
+        }
+        }
+
+        function switchTurn() {
+        if(gameMode === 'ai') {
+            currentTurn = currentTurn === 'player1' ? 'player2' : 'player1';
+        } else {
+            currentTurn = currentTurn === 'player1' ? 'player2' : 'player1';
+        }
+        if(currentTurn === 'player1' || currentTurn === 'player2') {
+            lockAlertShown[currentTurn] = false;
+        } 
+        if(gameMode === 'ai' && currentTurn === 'player2') {
+            lockAlertShown.ai = false;
+        }
+        }
+
+        function updateGame() {
+        player1Score = board.filter(t => t.owner === 'player1').length;
+        player2Score = board.filter(t => t.owner === 'player2').length;
+
+        const neutralLeft = board.some(t => t.owner === 'netral');
+        const p1Moves = getAvailableMoves('player1').length;
+        const p2Moves = getAvailableMoves('player2').length;
+
+        if(!neutralLeft || (p1Moves === 0 && p2Moves === 0)) {
+            renderBoard();
+            showResult();
+            return;
+        }
+
+        let currentPlayerMoves = getAvailableMoves(currentTurn).length;
+
+        if(currentPlayerMoves === 0) {
+            if(gameMode === 'ai' && currentTurn === 'player2') {
+            if(!lockAlertShown.ai) {
+                alert('AI terkunci dan tidak bisa bergerak. Giliran beralih ke Anda.');
+                lockAlertShown.ai = true;
+            }
+            } else {
+            if(!lockAlertShown[currentTurn]) {
+                alert(`Pemain ${currentTurn === 'player1' ? '1' : '2'} terkunci dan tidak bisa bergerak. Giliran beralih ke lawan.`);
+                lockAlertShown[currentTurn] = true;
+            }
+            }
+
+            if(currentTurn === 'player1' && p2Moves > 0) {
+            currentTurn = 'player2';
+            if(gameMode === 'ai') lockAlertShown.ai = false; else lockAlertShown.player2 = false;
+            } else if(currentTurn === 'player2' && p1Moves > 0) {
+            currentTurn = 'player1';
+            lockAlertShown.player1 = false;
+            } else {
+            renderBoard();
+            showResult();
+            return;
+            }
+            currentPlayerMoves = getAvailableMoves(currentTurn).length;
+        }
+
+        renderBoard();
+
+        if(gameMode === 'ai') {
+            if(currentTurn === 'player1') {
+            infoPanel.textContent = `Giliran Pemain - Klik ubin yang disorot untuk menaklukkan wilayah | Skor Anda: ${player1Score} | Skor AI: ${player2Score}`;
+            } else {
+            infoPanel.textContent = `Giliran AI... Skor Anda: ${player1Score} | Skor AI: ${player2Score}`;
+            setTimeout(() => aiTurn(), 700);
+            }
+        } else {
+            infoPanel.textContent = `Giliran ${currentTurn === 'player1' ? 'Pemain 1' : 'Pemain 2'} - Klik ubin yang disorot untuk menaklukkan wilayah | Skor Pemain 1: ${player1Score} | Skor Pemain 2: ${player2Score}`;
+        }
+        }
+
+        function showResult() {
+        let message = '';
+        if(player1Score > player2Score) {
+            message = gameMode === 'ai' 
+            ? `Anda Menang! Skor Anda: ${player1Score} | Skor AI: ${player2Score}`
+            : `Pemain 1 Menang! Skor Pemain 1: ${player1Score} | Skor Pemain 2: ${player2Score}`;
+        } else if(player1Score < player2Score) {
+            message = gameMode === 'ai' 
+            ? `AI Menang. Skor Anda: ${player1Score} | Skor AI: ${player2Score}`
+            : `Pemain 2 Menang! Skor Pemain 1: ${player1Score} | Skor Pemain 2: ${player2Score}`;
+        } else {
+            message = `Seri! Skor Pemain 1: ${player1Score} | Skor Pemain 2: ${player2Score}`;
+        }
+        infoPanel.textContent = message + ' — Muat ulang halaman untuk bermain lagi.';
+        alert(message);
+        }
+
+        function conquerTile(tile, owner) {
+        tile.owner = owner;
+        const neighbors = getNeighbors(tile);
+        neighbors.forEach(nb => {
+            if(nb.owner !== owner && nb.owner !== 'netral') {
+            nb.owner = owner;
+            }
+        });
+        }
+
+        function playerMove(tile) {
+        if(currentTurn !== 'player1' && currentTurn !== 'player2') return;
+        const available = getAvailableMoves(currentTurn);
+        if(!available.some(t => t.row === tile.row && t.col === tile.col)) return;
+        conquerTile(tile, currentTurn);
+        switchTurn();
+        updateGame();
+        }
+
+        function aiTurn() {
+        if(gameMode !== 'ai') return;
+        const available = getAvailableMoves('player2');
+        if(available.length === 0) {
+            currentTurn = 'player1';
+            updateGame();
+            return;
+        }
+        const choice = available[Math.floor(Math.random() * available.length)];
+        conquerTile(choice, 'player2');
+        currentTurn = 'player1';
+        updateGame();
+        }
+
+        modeSelector.addEventListener('change', () => {
+        gameMode = modeSelector.value;
+        currentTurn = 'player1';
+        player1Score = 0;
+        player2Score = 0;
+        initBoard();
+        updateGame();
+        });
+
+        function startGame() {
+        currentTurn = 'player1';
+        player1Score = 0;
+        player2Score = 0;
+        initBoard();
+        updateGame();
+        }
+
+        startGame();
+    })();
+    </script>
+    </body>
+    </html>
+    </content>
+    </create_file>

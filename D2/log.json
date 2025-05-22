@@ -1,0 +1,32 @@
+[
+    {
+        "id": "67a81f684fae7",
+        "name": "Senin",
+        "content": "Kemarin Libur!!!",
+        "date": "09\/02\/2025"
+    },
+    {
+        "id": "67a842e18bfa4",
+        "name": "Minggu",
+        "content": "Besok Sekolah!!!",
+        "date": "09\/02\/2025"
+    },
+    {
+        "id": "681adf4c16cc6",
+        "name": "Rabu",
+        "content": "Kemarin Selasa",
+        "date": "07\/05\/2025"
+    },
+    {
+        "id": "68259a643070c",
+        "name": "Kamis",
+        "content": "Kemarin Hari Rabu",
+        "date": "15\/05\/2025"
+    },
+    {
+        "id": "682ef59b837b5",
+        "name": "Selasa",
+        "content": "Kemarin Senin Dan Besok Rabu!",
+        "date": "22\/05\/2025"
+    }
+]
